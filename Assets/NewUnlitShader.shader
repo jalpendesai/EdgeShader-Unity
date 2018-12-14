@@ -3,12 +3,21 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
-		_OutlineColor("Outline color", Color) = (0,0,0,1)	// Black color
-		_OutlineWidth("Outline width", Range(1.0,5.0)) = 1.01
 	}
+	SubShader
+	{
+		Tags { "RenderType"="Opaque" }
+		LOD 100
 
-	CGINCLUDE
-		#include "UnityCG.cginc"
+		Pass
+		{
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			// make fog work
+			#pragma multi_compile_fog
+			
+			#include "UnityCG.cginc"
 
 			struct appdata
 			{
@@ -34,40 +43,6 @@
 				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
 			}
-	ENDCG
-
-	SubShader
-	{
-		Tags { "RenderType"="Opaque" }
-		LOD 100
-
-		
-
-		Pass 	// For Rendering the Outline
-		{
-			ZWrite Off		// So cannot write on Depth buffer. Other things will be on top of it
-
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-
-			half4 frag(v2f i) : COLOR
-			{
-				return _OutlineColor;
-			}
-				ENDCG
-		}
-
-		Pass
-		{
-			ZWrite On
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			// make fog work
-			#pragma multi_compile_fog
-			
-			
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
